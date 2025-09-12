@@ -1,6 +1,6 @@
 package usecases
 
-import "github.com/clarabecker/estudos-go/Internal/entity"
+import "github.com/clarabecker/estudos-go/internal/entity"
 
 type CreateProductInputDTO struct {
 	Name string `json:"name"`

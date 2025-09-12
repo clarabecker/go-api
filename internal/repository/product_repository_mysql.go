@@ -3,7 +3,7 @@ package repository
 import (
 	"database/sql"
 
-	"github.com/clarabecker/estudos-go/Internal/entity"
+	"github.com/clarabecker/estudos-go/internal/entity"
 )
 
 type ProductRepositoryMysql struct{
