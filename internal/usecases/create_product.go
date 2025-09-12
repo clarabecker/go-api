@@ -3,8 +3,8 @@ package usecases
 import "github.com/clarabecker/estudos-go/Internal/entity"
 
 type CreateProductInputDTO struct {
-	Name string 
-	Price float64
+	Name string `json:"name"`
+	Price float64 `json:"price"`
 }
 
 type CreateProductOutputDto struct {
@@ -16,6 +16,14 @@ type CreateProductOutputDto struct {
 type CreateProductUseCase struct {
 	ProductRepository entity.ProductRepository
 }
+
+
+func NewCreateProductUseCase(repo entity.ProductRepository) *CreateProductUseCase {
+	return &CreateProductUseCase{
+		ProductRepository: repo,
+	}
+}
+
 
 func (u *CreateProductUseCase) Execute(input CreateProductInputDTO) (*CreateProductOutputDto, error) {
 	product := entity.NewProduct(input.Name, input.Price)
