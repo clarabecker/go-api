@@ -6,7 +6,7 @@ import (
 	"github.com/clarabecker/estudos-go/internal/entity"
 )
 
-type ProductRepositoryMysql struct{
+type ProductRepositoryMysql struct {
 	DB *sql.DB
 }
 
@@ -15,8 +15,8 @@ func NewProductRepositoryMysql(db *sql.DB) *ProductRepositoryMysql {
 }
 
 func (r *ProductRepositoryMysql) Create(product *entity.Product) error {
-	_, err := r.DB.Exec("Insert into products (id,name, price) values(?,?,?)", 
-	product.ID, product.Name, product.Price)
+	_, err := r.DB.Exec("Insert into products (id,name, price) values(?,?,?)",
+		product.ID, product.Name, product.Price)
 
 	if err != nil {
 		return err
@@ -25,27 +25,24 @@ func (r *ProductRepositoryMysql) Create(product *entity.Product) error {
 	return nil
 }
 
-func (r *ProductRepositoryMysql) FindAll() ([]entity.Product, error) {
+func (r *ProductRepositoryMysql) FindAll() ([]*entity.Product, error) {
 	rows, err := r.DB.Query("select id, name, price from products")
 
-	if err != nil{
-		return nil, err 
+	if err != nil {
+		return nil, err
 	}
-
-	//espera tudo ser executado para rodar depois 
 	defer rows.Close()
 
-	var products []entity.Product
+	var products []*entity.Product
 
 	for rows.Next() {
 		var product entity.Product
 		err = rows.Scan(&product.ID, &product.Name, &product.Price)
-
 		if err != nil {
 			return nil, err
 		}
-
-		products = append(products, product)
+		
+		products = append(products, &product)
 	}
 
 	return products, nil

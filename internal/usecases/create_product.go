@@ -17,11 +17,10 @@ type CreateProductUseCase struct {
 	ProductRepository entity.ProductRepository
 }
 
-
-func NewCreateProductUseCase(repo entity.ProductRepository) *CreateProductUseCase {
-	return &CreateProductUseCase{
-		ProductRepository: repo,
-	}
+func NewCreateProductUseCase(productRepository entity.ProductRepository) *CreateProductUseCase {
+    return &CreateProductUseCase{
+        ProductRepository: productRepository,
+    }
 }
 
 
