@@ -38,8 +38,22 @@ func (p *ProjectHandlers) CreateProductHandler(w http.ResponseWriter, r *http.Re
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-
+	
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(output)
+}
+
+func (p *ProjectHandlers) ListProductHandler(w http.ResponseWriter, r *http.Request) {
+	output, err := p.ListProductsUseCase.Execute()
+
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(output)
 }
 

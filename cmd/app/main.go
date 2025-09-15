@@ -4,16 +4,19 @@ import (
 	"database/sql"
 	"encoding/json"
 	"log"
+	"net/http"
 
 	"github.com/clarabecker/estudos-go/internal/infra/akafka"
 	"github.com/clarabecker/estudos-go/internal/repository"
 	"github.com/clarabecker/estudos-go/internal/usecases"
+	"github.com/clarabecker/estudos-go/internal/web"
 	"github.com/confluentinc/confluent-kafka-go/kafka"
+	"github.com/go-chi/chi/v5"
 	_ "github.com/go-sql-driver/mysql"
 )
 
 func main() {
-	db, err := sql.Open("mysql", "root:root@tcp(host.docker.internal:3600)/products")
+	db, err := sql.Open("mysql", "root:root@tcp(mysql:3306)/products")
 	if err != nil {
 		panic(err)
 	}
@@ -21,9 +24,22 @@ func main() {
 
 	productRepository := repository.NewProductRepositoryMysql(db)
 	createProductUseCase := usecases.NewCreateProductUseCase(productRepository)
+	listProductUseCase := usecases.NewListProductsUseCase(productRepository)
 
 	msgChan := make(chan *kafka.Message)
-	go akafka.Consume([]string{"products"}, "host.docker.internal:9094", msgChan)
+	go akafka.Consume([]string{"product"}, "kafka:9092", msgChan)
+
+	productHandler := web.NewProductHandlers(createProductUseCase, listProductUseCase)
+
+	r := chi.NewRouter()
+	r.Post("/products", productHandler.CreateProductHandler)
+	r.Get("/products", productHandler.ListProductHandler)
+
+	go func() {
+		if err := http.ListenAndServe(":8000", r); err != nil {
+			log.Fatalf("Erro ao iniciar HTTP server: %v", err)
+		}
+	}()
 
 	for msg := range msgChan {
 		var dto usecases.CreateProductInputDTO
